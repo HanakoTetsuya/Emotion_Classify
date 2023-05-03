@@ -57,7 +57,7 @@ def main():
 
 		with st.form(key='emotion_clf_form'):
 			raw_text = st.text_area("Type or Copy & Paste Here")
-            raw_text=tfidf.transform([ex1]).toarray()
+                        raw_text=tfidf.transform([raw_text]).toarray()
 			submit_text = st.form_submit_button(label = 'Submit')
 
 		if submit_text:

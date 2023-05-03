@@ -41,6 +41,57 @@ def train_model(model):
     y_prob = model.predict_proba(X_test)
 
 rf = RandomForestClassifier(n_estimators= 300)
-train_model(rf)
 
+emotions_emoji_dict = {"neutral" : "😐", "depressed" : "😔"}
 
+# Main Application
+def main():
+	st.title("Gogatsubyo Classifier App")
+	menu = ["Home"]
+	choice = st.sidebar.selectbox("Menu", menu)
+	create_page_visited_table()
+	create_emotionclf_table()
+	if choice == "Home":
+		add_page_visited_details("Home", datetime.now())
+		st.subheader("Gogatsubyo Detection in Text")
+
+		with st.form(key='emotion_clf_form'):
+			raw_text = st.text_area("Type or Copy & Paste Here")
+            raw_text=tfidf.transform([ex1]).toarray()
+			submit_text = st.form_submit_button(label = 'Submit')
+
+		if submit_text:
+			col1, col2  = st.columns(2)
+
+			# Apply Function Here
+			prediction = rf.predict(raw_text)
+			probability = rf.predict_proba(raw_text)
+			
+			add_prediction_details(raw_text, prediction, np.max(probability), datetime.now())
+
+			with col1:
+				st.success("Original Text")
+				st.write(raw_text)
+
+				st.success("Prediction")
+				emoji_icon = emotions_emoji_dict[prediction]
+				st.write("{}:{}".format(prediction, emoji_icon))
+				st.write("Confidence:{}".format(np.max(probability)))
+
+			with col2:
+				st.success("Prediction Probability")
+				# st.write(probability)
+				proba_df = pd.DataFrame(probability, columns = rf.classes_)
+				# st.write(proba_df.T)
+				proba_df_clean = proba_df.T.reset_index()
+				proba_df_clean.columns = ["emotions", "probability"]
+
+				fig = alt.Chart(proba_df_clean).mark_bar().encode(x = 'emotions', y = 'probability', color = 'emotions')
+				st.altair_chart(fig,use_container_width = True)
+
+	else:
+		st.subheader("About")
+		add_page_visited_details("About", datetime.now())
+
+if __name__ == '__main__':
+	main()

@@ -41,6 +41,7 @@ def train_model(model):
     y_prob = model.predict_proba(X_test)
 
 rf = RandomForestClassifier(n_estimators= 300)
+train_model(rf)
 
 emotions_emoji_dict = {"neutral" : "😐", "depressed" : "😔"}
 

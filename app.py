@@ -45,6 +45,18 @@ train_model(rf)
 
 emotions_emoji_dict = {"neutral" : "😐", "depressed" : "😔"}
 
+# Track Utils
+from track_utils import create_page_visited_table, add_page_visited_details, view_all_page_visited_details, add_prediction_details, view_all_prediction_details, create_emotionclf_table
+
+# Function
+docx=tfidf.transform([docx]).toarray()
+def predict_emotions(docx):
+	results = rf.predict([docx])
+	return results[0]
+
+def get_prediction_proba(docx):
+	results = rf.predict_proba([docx])
+	return results
 # Main Application
 def main():
 	st.title("Gogatsubyo Classifier App")
@@ -58,15 +70,14 @@ def main():
 
 		with st.form(key='emotion_clf_form'):
 			raw_text = st.text_area("Type or Copy & Paste Here")
-                        raw_text=tfidf.transform([raw_text]).toarray()
 			submit_text = st.form_submit_button(label = 'Submit')
 
 		if submit_text:
 			col1, col2  = st.columns(2)
 
 			# Apply Function Here
-			prediction = rf.predict(raw_text)
-			probability = rf.predict_proba(raw_text)
+			prediction = prediction_emotions(raw_text)
+			probability = get_prediction_proba(raw_text)
 			
 			add_prediction_details(raw_text, prediction, np.max(probability), datetime.now())
 

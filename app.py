@@ -7,13 +7,6 @@ sns.set()
 import re
 import string
 
-import warnings
-warnings.filterwarnings('ignore')
-
-from nltk import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -22,6 +15,14 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 from scikitplot.metrics import plot_confusion_matrix, plot_roc
 import streamlit as st
+
+rad=st.sidebar.radio("Navigation Menu",["Gogatubyo"])
+
+#displays all the available disease prediction options in the web app
+if rad=="Home":
+    st.title("Mental Disorder Predictions App")
+    st.text("The Following Disease Predictions Are Available ->")
+    st.text("1. Gogatsubyo")
 
 data = pd.read_csv('dataset.csv')
 data=data.dropna(how='any')
@@ -34,76 +35,20 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.2, random
 tfidf = TfidfVectorizer(max_features= 2500, min_df= 2)
 X_train = tfidf.fit_transform(X_train).toarray()
 X_test = tfidf.transform(X_test).toarray()
+model = RandomForestClassifier(n_estimators= 300)
+model.fit(X_train, y_train)
 
-def train_model(model):
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    y_prob = model.predict_proba(X_test)
-
-rf = RandomForestClassifier(n_estimators= 300)
-train_model(rf)
-
-emotions_emoji_dict = {"neutral" : "😐", "depressed" : "😔"}
-
-# Track Utils
-from track_utils import create_page_visited_table, add_page_visited_details, view_all_page_visited_details, add_prediction_details, view_all_prediction_details, create_emotionclf_table
-
-# Function
-docx=tfidf.transform([docx]).toarray()
-def predict_emotions(docx):
-	results = rf.predict([docx])
-	return results[0]
-
-def get_prediction_proba(docx):
-	results = rf.predict_proba([docx])
-	return results
-# Main Application
-def main():
-	st.title("Gogatsubyo Classifier App")
-	menu = ["Home"]
-	choice = st.sidebar.selectbox("Menu", menu)
-	create_page_visited_table()
-	create_emotionclf_table()
-	if choice == "Home":
-		add_page_visited_details("Home", datetime.now())
-		st.subheader("Gogatsubyo Detection in Text")
-
-		with st.form(key='emotion_clf_form'):
-			raw_text = st.text_area("Type or Copy & Paste Here")
-			submit_text = st.form_submit_button(label = 'Submit')
-
-		if submit_text:
-			col1, col2  = st.columns(2)
-
-			# Apply Function Here
-			prediction = prediction_emotions(raw_text)
-			probability = get_prediction_proba(raw_text)
-			
-			add_prediction_details(raw_text, prediction, np.max(probability), datetime.now())
-
-			with col1:
-				st.success("Original Text")
-				st.write(raw_text)
-
-				st.success("Prediction")
-				emoji_icon = emotions_emoji_dict[prediction]
-				st.write("{}:{}".format(prediction, emoji_icon))
-				st.write("Confidence:{}".format(np.max(probability)))
-
-			with col2:
-				st.success("Prediction Probability")
-				# st.write(probability)
-				proba_df = pd.DataFrame(probability, columns = rf.classes_)
-				# st.write(proba_df.T)
-				proba_df_clean = proba_df.T.reset_index()
-				proba_df_clean.columns = ["emotions", "probability"]
-
-				fig = alt.Chart(proba_df_clean).mark_bar().encode(x = 'emotions', y = 'probability', color = 'emotions')
-				st.altair_chart(fig,use_container_width = True)
-
-	else:
-		st.subheader("About")
-		add_page_visited_details("About", datetime.now())
-
-if __name__ == '__main__':
-	main()
+#heading over to the Gogatsubyo section
+if rad=="Gogatsubyo":
+    st.header("Know If You Are Affected By Gogatsubyo")
+    st.write("Fill or copy & paste your feeling in SNS")
+    raw_text=st.text_area("Text Here")"
+    raw_text=tfidf.transform(raw_text).toarray()
+    
+    prediction=model.predict([raw_text])[0]
+    
+    if st.button("Predict"):
+        if prediction==1:
+            st.warning("You Might Be Affected By Gogatsubyo")
+        elif prediction2==0:
+            st.success("You Are Safe")

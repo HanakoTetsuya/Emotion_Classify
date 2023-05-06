@@ -1,9 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
-
 import re
 import string
 
@@ -11,9 +7,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-
-from scikitplot.metrics import plot_confusion_matrix, plot_roc
 import streamlit as st
 
 rad=st.sidebar.radio("Navigation Menu",["Gogatubyo"])
